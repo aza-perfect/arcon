@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Производство{% endblock %}</title>
+    {% load static %}
+    <!--  <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">-->
+    <!-- Временно для отладки -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <!--   Heroicons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<!-- HEADER -->
+<header class="bg-white shadow-md p-4">
+    <div class="container mx-auto flex justify-between items-center">
+
+        <!-- Лого + название -->
+        <div class="flex items-center space-x-3">
+            <img src="{% static 'production/logo.jpg' %}" alt="Логотип" class="h-8 w-auto mr-4">
+            <span class="text-xl font-semibold text-gray-800">Ishlabchiqarish</span>
+        </div>
+
+        <!-- Бургер-кнопка -->
+        <button id="burgerBtn" class="md:hidden text-gray-700">
+            <i data-feather="menu" class="w-6 h-6"></i>
+        </button>
+
+        <!-- Эти элементы скрыты на мобильных устройствах, но видны на больших экранах -->
+        <div class="hidden md:flex items-center space-x-4">
+            {% if request.user.is_authenticated %}
+            <span class="text-base mr-2 text-gray-700 flex items-center">
+                <i data-feather="user" class="mr-2 w-5 h-5"></i>
+                {{ request.user.get_full_name|default:request.user.username }}
+            </span>
+            <form action="{% url 'production:logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-base flex items-center">
+                    <i data-feather="log-out" class="mr-2 w-5 h-5"></i> Chiqish
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+
+<!-- Основной контейнер -->
+<div class="flex  flex-col md:flex-row h-[calc(100vh-6rem)] overflow-hidden relative">
+    {% include "production/side.html" %}
+    <div class="flex-1 my-2 mr-2 overflow-y-auto bg-white p-4 md:rounded md:shadow">
+        <main class="h-full">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    feather.replace()
+
+    const burgerBtn = document.getElementById("burgerBtn")
+    const sidebar = document.getElementById("mobileSidebar")
+
+    burgerBtn?.addEventListener("click", () => {
+        sidebar.classList.toggle("-translate-x-full")
+    })
+</script>
+
+{% block extra_js %}
+
+{% endblock %}
+</body>
+</html>

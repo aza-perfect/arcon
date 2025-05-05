@@ -1,0 +1,174 @@
+{% load custom_tags %}
+
+
+<style>
+    /* === Единая высота для всех селектов Select2 === */
+    .select2-container--default .select2-selection--multiple,
+    .select2-container--default .select2-selection--single {
+      min-height: 40px;         /* 40px */
+      padding: 0.25rem 0.75rem;   /* по вертикали чуть меньше, по горизонтали как px-3 */
+      border: 1px solid #D1D5DB;  /* border-gray-300 */
+      border-radius: 0.375rem;    /* rounded-md */
+      background-color: #FFFFFF;  /* bg-white */
+    }
+
+    /* Убираем дефолтные отступы внутри контейнера */
+    .select2-container--default .select2-selection__rendered {
+      line-height: 30px;        /* чтобы текст был по центру вертикали */
+      padding: 0;
+    }
+
+    /* Стрелка */
+    .select2-container--default .select2-selection__arrow {
+      height: 30px;
+      right: 0.5rem;
+    }
+    .select2-container--default .select2-selection__arrow b {
+      margin-top: 0.7rem;
+    }
+
+    /* Сами элементы multiple (теги) */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background-color: #E5E7EB;  /* bg-gray-200 */
+      border: none;
+      color: #374151;             /* text-gray-700 */
+      padding: revert!important;
+      margin-top: 0.25rem;
+      margin-right: 0.25rem;
+      border-radius: 0.25rem;     /* rounded */
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+      margin-right: 0.25rem;
+    }
+    /* Подправляем теги множественного выбора Select2 */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      padding: 0.25rem 1.5rem 0.25rem 0.5rem;  /* Увеличены отступы для текста */
+      margin: 0.25rem 0.25rem 0.25rem 0;
+      background-color: #E5E7EB;              /* bg-gray-200 */
+      border: none;
+      border-radius: 0.25rem;                 /* rounded */
+    }
+
+/* При наведении на крестик */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+  color: #374151;                        /* text-gray-700 */
+}
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  color: #374151;  /* Улучшенный контраст */
+  font-size: 1rem;  /* Увеличенный размер для лучшей видимости */
+  margin-right: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Опционально: эффект наведения */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+  color: #1F2937;  /* Ещё темнее при наведении */
+}
+
+/* Опционально: улучшение видимости текста-заполнителя */
+.select2-container--default .select2-selection__placeholder {
+  color: #6B7280;  /* Темнее для лучшего контраста */
+}
+    .select2-selection__choice__display {
+        margin-left: 25px
+    }
+</style>
+
+
+<!-- === ФИЛЬТРЫ === -->
+<details class="md:open border rounded bg-white p-4 mb-6">
+    <summary class="cursor-pointer font-medium text-gray-700">
+        🔍 Filter
+    </summary>
+    {% is_filter_m as show_client_filter %}
+    <form method="get" class="mt-4 space-y-4 md:space-y-0 md:flex md:space-x-4">
+        {% if show_client_filter %}
+        <!-- Клиент -->
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Mijoz</label>
+            <select name="client" id="mijoz" multiple>
+                {% for c in clients %}
+                <option value="{{ c.id }}" {% if c.id in selected_clients %}selected{% endif %}>
+                    {{ c.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+        <!-- Продукт -->
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Mahsulot</label>
+            <select name="product" id="product" multiple>
+                {% for c in products %}
+                <option value="{{ c.id }}" {% if c.id in selected_products %}selected{% endif %}>
+                    {{ c.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% if show_client_filter %}
+        <!-- Продавец (для суперюзера) -->
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Sotuvchi</label>
+            <select name="seller" id="seller" multiple>
+                <option value="">— Hammasи —</option>
+                {% for c in sellers %}
+                <option value="{{ c.id }}" {% if c.id in selected_sellers %}selected{% endif %}>
+                    {{ c.username }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        <!-- Даты -->
+        <div>
+            <label class="block text-sm font-medium text-gray-600">Dan</label>
+            <input type="date" name="date_from" value="{{ filter.date_from }}"
+                   class="mt-1 block w-full rounded border px-3 py-2"/>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-600">Gacha</label>
+            <input type="date" name="date_to" value="{{ filter.date_to }}"
+                   class="mt-1 block w-full rounded border px-3 py-2"/>
+        </div>
+        <div class="flex items-end space-x-2">
+            <button type="submit"
+                    class="w-full md:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Qollash
+            </button>
+            <a href="{{ request.path }}"
+               class="w-full md:w-auto bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 text-center">
+                Sbros
+            </a>
+        </div>
+    </form>
+</details>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Перечислите все ваши фильтрующие <select> по их id
+      const fields = [
+        '#mijoz',     // клиент
+        '#product',   // товар
+        '#seller',   // продавец
+      ];
+      fields.forEach(function(selector) {
+        const $el = $(selector);
+        if (!$el.length) return;
+        $el.select2({
+          width: '100%',
+          dropdownParent: $('body'),
+          placeholder: '— Hammasi —',
+          allowClear: true,
+          selectionCssClass: 'focus:outline-none focus:ring focus:border-blue-500 bg-white text-gray-900',
+          dropdownCssClass:  'bg-white rounded-md shadow-lg mt-1 border border-gray-200',
+          // Если это multiple (например, клиент или продавец), добавьте multiple: true
+        });
+      });
+    });
+</script>
+{% endblock %}

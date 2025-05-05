@@ -1,0 +1,40 @@
+{% extends 'production/base.html' %}
+
+{% block title %}Подтверждение продаж{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 space-y-8">
+    <h1 class="text-3xl font-bold text-gray-800">Sotuvla Tasdiqlashga</h1>
+
+    {% if sales %}
+    <div class="space-y-6">
+        {% for sale in sales %}
+        <div class="bg-white rounded-lg shadow-md p-6 md:flex md:justify-between md:items-center hover:shadow-lg transition-shadow duration-200">
+            <div class="space-y-2 text-sm text-gray-700 md:w-2/3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2">
+                    <p><span class="font-medium">Zakaz:</span> #{{ sale.order.id }}</p>
+                    <p><span class="font-medium">Mijoz:</span> {{ sale.order.client.name }}</p>
+                    <p><span class="font-medium">Mahsulot:</span> {{ sale.order.product.name }}</p>
+                    <p><span class="font-medium">Sotuvchi:</span> {{ sale.order.seller.username }}</p>
+                    <p><span class="font-medium">Sotilgan Soni:</span> {{ sale.quantity }}</p>
+                    <p><span class="font-medium">Qoldi:</span> {{ sale.remaining }}</p>
+                    <p><span class="font-medium">Jami Zakaz Soni:</span> {{ sale.order.quantity }}</p>
+                </div>
+            </div>
+            <div class="mt-4 md:mt-0 md:w-1/3 md:flex md:justify-end">
+                <form method="post" action="{% url 'production:confirm_sale' sale.pk %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="w-full md:w-auto px-5 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition duration-150">
+                        Tasdiqlash
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-600">Tasdiqlashga Sotuvla yoq =)</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'production/base.html' %}
+{% load static widget_tweaks %}
+
+{% block title %}Новый заказ{% endblock %}
+
+{% block content %}
+<!-- Карточка формы -->
+<style>
+    input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+}
+</style>
+
+<style>
+/* Общая высота селекта оставляем 2.5rem */
+.select2-container--default .select2-selection--single {
+  height: 2.5rem;
+  padding: 0; /* сбрасываем внутренние отступы */
+}
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #9CA3AF; /* text-gray-400 в Tailwind */
+}
+
+/* Выравниваем сам текст (включая placeholder) по центру */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 0.75rem;     /* по горизонтали тот же px-3 */
+  line-height: 2.5rem;    /* ровно высота контейнера */
+}
+
+/* Кнопка-стрелка */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 2.5rem;
+}
+
+/* Убираем внутренний паддинг вокруг стрелки */
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  margin-top: 0;
+}
+
+</style>
+
+
+<!-- Заголовок -->
+<div class="bg-blue-600 px-6 py-4">
+    <h1 class="text-white text-2xl font-semibold">Zakaz Yaratish</h1>
+</div>
+
+<!-- Тело формы -->
+<form method="post" class="px-8 py-6 space-y-6">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <!-- Секция 1: Клиент и Продукт -->
+    <div class="grid gap-6 md:grid-cols-2">
+        <div>
+            <label class="block text-gray-700 mb-1" for="id_client">Mijoz</label>
+            {{ form.client|add_class:"w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500" }}
+
+            {{ form.client.errors }}
+        </div>
+        <div>
+            <label class="block text-gray-700 mb-1" for="id_product">Mahsulot</label>
+            {{ form.product|add_class:"w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500" }}
+            {{ form.product.errors }}
+        </div>
+    </div>
+
+    <!-- Секция 2: Количество и Опции -->
+    <div class="grid gap-6 md:grid-cols-3 items-end">
+        <div>
+            <label class="block text-gray-700 mb-1" for="id_quantity">Soni</label>
+            {{ form.quantity|add_class:"w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500" }}
+            {{ form.quantity.errors }}
+        </div>
+        <div class="flex items-center space-x-4">
+            {{ form.use_lazer|add_class:"h-5 w-5 text-blue-600" }}
+            <label class="text-gray-700" for="id_use_lazer">Lazer</label>
+        </div>
+        <div class="flex items-center space-x-4">
+            {{ form.use_chaxlash|add_class:"h-5 w-5 text-blue-600" }}
+            <label class="text-gray-700" for="id_use_chaxlash">Chahlangan</label>
+        </div>
+    </div>
+
+    <!-- Секция 2.5: Deadline -->
+    <div class="mt-6 max-w-md w-full">
+        <label class="block text-gray-700 mb-1" for="id_deadline">Tugash sanasi</label>
+        {{ form.deadline|add_class:"w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500" }}
+        {{ form.deadline.errors }}
+    </div>
+
+
+
+    <!-- Секция 3: Цвета -->
+    <div class="space-y-4">
+        <p class="text-gray-800 font-semibold">Rang (stilka yoki padosh)</p>
+        <p class="text-sm text-gray-500">2 lasidan 1ni tanglang: stilka <span class="font-bold">yoki</span> padosh.</p>
+
+        <div class="grid gap-6 md:grid-cols-2 items-center">
+            <!-- Стилка -->
+            <div>
+                <label class="block text-gray-700 mb-1" for="id_style_color">Stilka</label>
+                {{ form.style_color|add_class:"w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500" }}
+                {{ form.style_color.errors }}
+            </div>
+            <!-- Подошва -->
+            <div>
+                <label class="block text-gray-700 mb-1" for="id_padosh_color">Padosh</label>
+                {{ form.padosh_color|add_class:"w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500" }}
+                {{ form.padosh_color.errors }}
+            </div>
+        </div>
+
+        <!-- Рандом (если есть) -->
+        <div class="mt-4">
+            <label class="block text-gray-700 mb-1" for="id_rand_color">Rand (ixtiyoriy)</label>
+            {{ form.rand_color|add_class:"w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500" }}
+            {{ form.rand_color.errors }}
+        </div>
+    </div>
+
+    <!-- Кнопка Создать -->
+    <div class="text-right">
+        <button type="submit"
+                class="px-6 py-3 bg-green-600 text-white font-medium rounded hover:bg-green-700 transition">
+            Yaratish
+        </button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // Инициализируем Select2 для Product и Цветов
+    $('#id_product, #id_style_color, #id_padosh_color, #id_rand_color, #id_client').select2({
+      placeholder: 'Tanlang',
+      width: '100%',
+      allowClear: true,
+      // MENU прямо в body, чтобы ни у кого не обрезалось
+      dropdownParent: $('body'),
+      selectionCssClass: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200 focus:border-blue-500 bg-white text-gray-900',
+      dropdownCssClass:  'bg-white rounded-md shadow-lg mt-1 border border-gray-200',
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  flatpickr("#id_deadline", {
+      dateFormat: "d.m.Y",
+      minDate: "today",
+      locale: {
+        firstDayOfWeek: 1
+      }
+
+  });
+</script>
+{% endblock %}

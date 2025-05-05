@@ -1,0 +1,30 @@
+{% extends 'production/base.html' %}
+{% block title %}{% if form.instance.pk %}Редактировать{% else %}Новый{% endif %} клиент{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto p-6 bg-white rounded shadow">
+    <h1 class="text-xl font-semibold mb-4">
+        Mijoz {% if form.instance.pk %}Ozgartrish{% else %}Qoshish{% endif %}
+    </h1>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="space-y-4">
+            {% for field in form %}
+            <div>
+                {{ field.label_tag }}
+                {{ field }}
+                {% for err in field.errors %}
+                <p class="text-red-600 text-sm">{{ err }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-6 text-right">
+            <button type="submit"
+                    class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Сохранить
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

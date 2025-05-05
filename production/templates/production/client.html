@@ -1,0 +1,109 @@
+{% extends 'production/base.html' %}
+{% load static custom_tags %}
+
+{% block title %}Панель клиентов{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+
+    <div class="mb-6 flex justify-between items-center">
+        <h2 class="text-xl font-semibold">Mijozlar</h2>
+        {% if request.user|is_seller_t or is_admin %}
+        <a href="{% url 'production:mijoz_create' %}"
+           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            + Yangi Mijoz
+        </a>
+        {% endif %}
+    </div>
+
+    {% if clients %}
+    {# Desktop table #}
+    <div class="hidden md:block overflow-x-auto">
+        <table class="min-w-full bg-white rounded shadow text-sm text-center">
+            <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2">Mijoz</th>
+                <th class="px-4 py-2">Telefon</th>
+                <th class="px-4 py-2">Zakazlar (Tugagan/Hammasi)</th>
+                <th class="px-4 py-2">Mahsulotlar Soni (Sotildi/Hammasi)</th>
+                <th class="px-4 py-2">Korish</th>
+                <th class="px-4 py-2">Ozgartrish</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for c in clients %}
+            <tr class="border-t">
+                <td class="px-4 py-2">{{ c.name }}</td>
+                <td class="px-4 py-2">{{ c.phone }}</td>
+                <td class="px-4 py-2">
+                    {{ c.completed_orders }} / {{ c.total_orders }}
+                </td>
+                <td class="px-4 py-2">
+                    {{ c.sold_qty }} / {{ c.total_qty }}
+                </td>
+                <td class="px-4 py-2">
+                    <a href="{% url 'production:zakaz_list' %}?client={{c.id}}"
+                       class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Korish
+                    </a>
+                </td>
+                <td class="px-4 py-2">
+                    <a href="{% url 'production:mijoz_edit' c.id %}"
+                       class="inline-block px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700">
+                        Ozgartrish
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# Mobile cards #}
+    <div class="md:hidden space-y-4">
+        {% for c in clients %}
+        <div class="bg-white rounded shadow p-4 space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="font-semibold">{{ c.name }}</span>
+            </div>
+            <div class="text-sm text-gray-600">
+                <p><span class="font-semibold">Telefoni: </span> {{ c.phone }}</p>
+                <p><span class="font-semibold">Zakazlar: </span> {{ c.completed_orders }} / {{ c.total_orders }}</p>
+                <p><span class="font-semibold">Mahsulotlar Soni: </span> {{ c.sold_qty }} / {{ c.total_qty }}</p>
+            </div>
+            <div class="text-right">
+                <a href="{% url 'production:zakaz_list' %}?client={{c.id}}"
+                   class="text-sm px-2 py-1 bg-blue-600 text-white rounded">
+                    Korish
+                </a>
+            </div>
+            <div class="text-right">
+                <a href="{% url 'production:mijoz_edit' c.id %}"
+                   class="text-sm px-2 py-1 bg-orange-600 text-white rounded">
+                    Ozgartrish
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Пагинация #}
+    <div class="mt-4">
+        {% if is_paginated %}
+        <nav class="flex justify-center space-x-2 text-sm">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 rounded">Назад</a>
+            {% endif %}
+            <span class="px-3 py-1 bg-gray-100 rounded">Стр. {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 rounded">Вперёд</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <p class="text-gray-600">Нет клиентов.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

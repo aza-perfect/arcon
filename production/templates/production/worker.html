@@ -1,0 +1,104 @@
+{% extends 'production/base.html' %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+
+{% block title %}Панель сотрудника{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+    {% if messages %}
+    <div class="space-y-2">
+        {% for msg in messages %}
+        <div class="px-4 py-2 rounded bg-red-100 text-red-800">
+            {{ msg }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1 class="text-2xl font-semibold">Sizni vazifalariz ({{ name_j }})</h1>
+
+    {% if tasks %}
+    <div class="space-y-4">
+        {% for t in tasks %}
+        {% with proc=t.proc %}
+        <div class="bg-white rounded shadow p-6 space-y-4">
+            <!-- Заголовок -->
+            <div class="flex justify-between items-center">
+                <div class="font-medium">
+                    #{{ proc.zp.order.pk }} — {{ proc.zp.order.product.name }}
+                    {% if proc.zp.order.style_color %}
+                    stilka {{ proc.zp.order.style_color.name }}
+                    {% elif proc.zp.order.padosh_color %}
+                    padosh {{ proc.zp.order.padosh_color.name }}
+                    {% endif %}
+                    {% if proc.zp.order.rand_color %}
+                    randi {{ proc.zp.order.rand_color.name }}
+                    {% endif %}
+                </div>
+                <div class="text-sm text-gray-500">{{ proc.jarayon.name }}</div>
+            </div>
+
+            <!-- Прогресс -->
+            <div class="flex flex-wrap gap-x-8 gap-y-2 text-sm text-gray-600">
+                <div>Zakaz: {{ t.total }}</div>
+                {% if request.user|is_quyuvchi %}
+                <div>Keldi: {{ t.incoming }}</div>
+                {% endif %}
+                <div>Bajarildi: {{ t.done }}</div>
+                <div>Qoldi: {{ t.remaining }}</div>
+            </div>
+
+
+            <!-- Форма -->
+            <form method="post"
+                  action="{% url 'production:stage_process' proc.zp.pk proc.jarayon.pk %}"
+                  class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% csrf_token %}
+
+                {% if t.form.non_field_errors %}
+                <div class="md:col-span-2 mb-2 p-2 bg-red-50 border border-red-200 rounded">
+                    <ul class="list-disc list-inside text-red-700 text-sm">
+                        {% for err in t.form.non_field_errors %}
+                        <li>{{ err }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div>
+                    <label class="block text-sm text-gray-700">Bajarildi</label>
+                    {{ t.form.quantity |add_class:"mt-1 block w-full px-3 py-2 border rounded focus:ring focus:border-blue-500" |attr:"placeholder:0" }}
+                    {% for err in t.form.quantity.errors %}
+                    <p class="text-red-600 text-xs mt-1">{{ err }}</p>
+                    {% endfor %}
+                </div>
+                {% if request.user|is_worker_t %}
+                <div>
+                    <label class="block text-sm text-gray-700">Brak</label>
+                    {{ t.form.brak |add_class:"mt-1 block w-full px-3 py-2 border rounded focus:ring focus:border-red-500" |attr:"placeholder:0" }}
+                    {% for err in t.form.brak.errors %}
+                    <p class="text-red-600 text-xs mt-1">{{ err }}</p>
+                    {% endfor %}
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm text-gray-700">Brakni qaysi jarayonga jonatish</label>
+                    {{ t.form.rework_stage |add_class:"mt-1 block w-full px-3 py-2 border rounded focus:ring focus:border-gray-500" }}
+                </div>
+                {% endif %}
+                <div class="md:col-span-2 text-right">
+                    <button type="submit"
+                            class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                        Saqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-600">Vazifala yoq =)</p>
+    {% endif %}
+</div>
+{% endblock %}

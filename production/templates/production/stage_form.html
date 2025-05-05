@@ -1,0 +1,38 @@
+{% extends 'production/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Панель сотрудника{% endblock %}
+{% block content %}
+{# Покажем ошибки формы сверху #}
+{% if form.non_field_errors %}
+  <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded">
+    <ul class="list-disc list-inside text-red-700">
+      {% for err in form.non_field_errors %}
+        <li>{{ err }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+<div>
+  <label>Выполнено</label>
+  {{ form.quantity }}
+  {% for err in form.quantity.errors %}
+    <p class="text-red-600 text-sm">{{ err }}</p>
+  {% endfor %}
+</div>
+<div>
+  <label>Брак</label>
+  {{ form.brak }}
+  {% for err in form.brak.errors %}
+    <p class="text-red-600 text-sm">{{ err }}</p>
+  {% endfor %}
+</div>
+<div>
+  <label>Куда вернуть брак</label>
+  {{ form.rework_stage }}
+  {% for err in form.rework_stage.errors %}
+    <p class="text-red-600 text-sm">{{ err }}</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

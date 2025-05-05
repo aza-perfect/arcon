@@ -1,0 +1,219 @@
+{% extends 'production/base.html' %}
+{% load static %}
+
+{% block title %}
+{% if form.instance.pk %}Редактировать{% else %}Добавить{% endif %} продукт
+{% endblock %}
+
+{% block content %}
+
+
+<style>
+    /* === Единая высота для всех селектов Select2 === */
+    .select2-container--default .select2-selection--multiple,
+    .select2-container--default .select2-selection--single {
+      min-height: 2.5rem;         /* 40px */
+      padding: 0.25rem 0.75rem;   /* по вертикали чуть меньше, по горизонтали как px-3 */
+      border: 1px solid #D1D5DB;  /* border-gray-300 */
+      border-radius: 0.375rem;    /* rounded-md */
+      background-color: #FFFFFF;  /* bg-white */
+    }
+
+    /* Убираем дефолтные отступы внутри контейнера */
+    .select2-container--default .select2-selection__rendered {
+      line-height: 2.0rem;        /* чтобы текст был по центру вертикали */
+      padding: 0;
+    }
+
+    /* Плейсхолдер */
+    .select2-container--default .select2-selection__placeholder {
+      color: #9CA3AF;             /* text-gray-400 */
+    }
+
+    /* Стрелка */
+    .select2-container--default .select2-selection__arrow {
+      height: 2.5rem;
+      right: 0.5rem;
+    }
+    .select2-container--default .select2-selection__arrow b {
+      margin-top: 0.7rem;
+    }
+
+    /* Сами элементы multiple (теги) */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background-color: #E5E7EB;  /* bg-gray-200 */
+      border: none;
+      color: #374151;             /* text-gray-700 */
+      padding: revert!important;
+      margin-top: 0.25rem;
+      margin-right: 0.25rem;
+      border-radius: 0.25rem;     /* rounded */
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+      margin-right: 0.25rem;
+      color: #6B7280;             /* text-gray-500 */
+    }
+    /* Подправляем теги множественного выбора Select2 */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      padding: 0.25rem 1.5rem 0.25rem 0.5rem;  /* Увеличены отступы для текста */
+      margin: 0.25rem 0.25rem 0.25rem 0;
+      background-color: #E5E7EB;              /* bg-gray-200 */
+      border: none;
+      border-radius: 0.25rem;                 /* rounded */
+<!--      display: flex;                          /* Используем flex для выравнивания */-->
+<!--      align-items: center;                    /* Вертикальное выравнивание */-->
+<!--      position: relative;-->
+    }
+
+/* При наведении на крестик */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+  color: #374151;                        /* text-gray-700 */
+}
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  color: #374151;  /* Улучшенный контраст */
+  font-size: 1rem;  /* Увеличенный размер для лучшей видимости */
+  margin-right: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Опционально: эффект наведения */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+  color: #1F2937;  /* Ещё темнее при наведении */
+}
+
+/* Опционально: улучшение видимости текста-заполнителя */
+.select2-container--default .select2-selection__placeholder {
+  color: #6B7280;  /* Темнее для лучшего контраста */
+}
+    .select2-selection__choice__display {
+        margin-left: 25px
+    }
+</style>
+
+
+<div class="mx-auto px-4 py-6
+            max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
+    <div class="bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-semibold mb-6">
+            Mahsulot {% if form.instance.pk %}Ozgartrish{% else %}Qosish{% endif %}
+        </h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="space-y-6">
+
+                <!-- Название -->
+                <div>
+                    {{ form.name.label_tag }}
+                    <div class="mt-2"> <!-- Добавляем отступ снизу для поля -->
+                        {{ form.name }}
+                    </div>
+                    {% for err in form.name.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ err }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Множественный выбор: цвета стилок -->
+                <div>
+                    {{ form.style_colors.label_tag }}
+                    <div class="mt-2"> <!-- Добавляем отступ снизу для поля -->
+                        {{ form.style_colors }}
+                    </div>
+                    {% for err in form.style_colors.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ err }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Множественный выбор: цвета подошв -->
+                <div>
+                    {{ form.padosh_colors.label_tag }}
+                    <div class="mt-2"> <!-- Добавляем отступ снизу для поля -->
+                        {{ form.padosh_colors }}
+                    </div>
+                    {% for err in form.padosh_colors.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ err }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Множественный выбор: ранд цвета -->
+                <div>
+                    {{ form.rand_colors.label_tag }}
+                    <div class="mt-2"> <!-- Добавляем отступ снизу для поля -->
+                        {{ form.rand_colors }}
+                    </div>
+                    {% for err in form.rand_colors.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ err }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Множественный выбор: этапы (jarayonlar) -->
+                <div>
+                    {{ form.jarayonlar.label_tag }}
+                    <div class="mt-2"> <!-- Добавляем отступ снизу для поля -->
+                        {{ form.jarayonlar }}
+                    </div>
+                    {% for err in form.jarayonlar.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ err }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Флаги lazer/chaxlash -->
+                <div class="flex items-center space-x-8">
+                    <label class="inline-flex items-center">
+                        {{ form.chaxlash }}
+                        <span class="ml-2 text-gray-700">Chaxlangan</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        {{ form.lazer }}
+                        <span class="ml-2 text-gray-700">Lazer</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-8 text-right">
+                <button type="submit"
+                        class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                    Saqlash
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<!-- Select2 -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Перечислите все ваши multiple-поля по их id
+      const fields = [
+        '#id_style_colors',
+        '#id_padosh_colors',
+        '#id_rand_colors',
+        '#id_jarayonlar'
+      ];
+      fields.forEach(function(selector) {
+        const $el = $(selector);
+        if (!$el.length) return;
+        $el.select2({
+          width: '100%',
+          dropdownParent: $el.parent(),
+          placeholder: 'Выбрать…',
+          allowClear: true,
+          selectionCssClass: 'focus:outline-none focus:ring focus:border-blue-500',
+          dropdownCssClass:  'bg-white rounded-md shadow-lg mt-1 border border-gray-200',
+          multiple: true,
+          tags: false
+        });
+      });
+    });
+</script>
+
+{% endblock %}

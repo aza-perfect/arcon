@@ -1,0 +1,65 @@
+{% extends 'production/base.html' %}
+{% load static %}
+{% block title %}Панель продавца{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+
+    <div class="mb-6 flex justify-between items-center">
+        <h2 class="text-xl font-semibold">Zakazlar</h2>
+        <a href="{% url 'production:dat_create' %}"
+           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            + Yangi Zakaz
+        </a>
+    </div>
+
+    {% if data %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white text-center rounded shadow text-sm">
+            <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2">№</th>
+                <th class="px-4 py-2">Ismi</th>
+                <th class="px-4 py-2">Telefon Raqami</th>
+                <th class="px-4 py-2">Umumiy Ogan Soni</th>
+                <th class="px-4 py-2">Sana</th>
+                <th class="px-4 py-2">Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for dat in data %}
+            <tr class="border-t">
+                <td class="px-4 py-2">{{ dat.id }}</td>
+                <td class="px-4 py-2">{{ dat.name }}</td>
+                <td class="px-4 py-2 flex items-center justify-center text-center">
+                    {{ dat.product.name }}
+                    {% if dat.style_color %}
+                    <span class="mx-1">stilka</span>
+                    <span class="inline-block w-5 h-5 rounded-full border-2 border-black"
+                          style="background-color: {{ dat.style_color.color }};"></span>
+                    {% elif dat.padosh_color %}
+                    <span class="mx-1">padosh</span>
+                    <span class="inline-block w-5 h-5 rounded-full border-2 border-black"
+                          style="background-color: {{ dat.padosh_color.color }};"></span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-2">
+                    0 / {{ dat.quantity }}
+                </td>
+                <td class="px-4 py-2">{{ dat.created|date:"d.m.Y" }}</td>
+                {% if is_admin %}
+                <td class="px-4 py-2">{{ dat.seller.username }}</td>
+                {% endif %}
+                <td class="px-4 py-2">
+                    <a href="{% url 'production:dat_detail' dat.pk %}" class="text-blue-600 hover:underline">Подробнее</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-gray-600">Zakazlar Yoq :(</p>
+    {% endif %}
+</div>
+{% endblock %}

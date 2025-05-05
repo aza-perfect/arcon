@@ -1,0 +1,195 @@
+{% extends 'production/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}Заказ #{{ zakaz.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+    {% if request.user|is_manager %}
+    <!-- 1. Информация о заказе -->
+    <div class="bg-white rounded shadow p-6">
+        <h2 class="text-2xl font-semibold mb-4">Zakaz #{{ zakaz.id }}</h2>
+
+        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+            <div>
+                <dt class="font-medium text-gray-600">Mijoz</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.client.name }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Telefon Raqami</dt>
+                <dd class="mt-1 text-gray-800">
+                    <a href="tel:{{ zakaz.client.phone }}" class="text-blue-500">{{ zakaz.client.phone }}</a>
+                </dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Sotuvchi</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.seller.username }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Mahsulot</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.product.name }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Zakaz Olingan Sana</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.created|date:"d.m.Y" }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Soni</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.quantity }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Status</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.status }}</dd>
+            </div>
+            {% if zakaz.style_color %}
+            <div>
+                <dt class="font-medium text-gray-600">Stilka</dt>
+                <dd class="mt-1 flex items-center space-x-2">
+          <span class="inline-block w-5 h-5 rounded-full border"
+                style="background-color: {{ zakaz.style_color.color }};"></span>
+                    <span class="text-gray-800">{{ zakaz.style_color.name }}</span>
+                </dd>
+            </div>
+            {% endif %}
+            {% if zakaz.padosh_color %}
+            <div>
+                <dt class="font-medium text-gray-600">Padosh</dt>
+                <dd class="mt-1 flex items-center space-x-2">
+          <span class="inline-block w-5 h-5 rounded-full border"
+                style="background-color: {{ zakaz.padosh_color.color }};"></span>
+                    <span class="text-gray-800">{{ zakaz.padosh_color.name }}</span>
+                </dd>
+            </div>
+            {% endif %}
+            {% if zakaz.rand_color %}
+            <div>
+                <dt class="font-medium text-gray-600">Rand</dt>
+                <dd class="mt-1 flex items-center space-x-2">
+          <span class="inline-block w-5 h-5 rounded-full border"
+                style="background-color: {{ zakaz.rand_color.color }};"></span>
+                    <span class="text-gray-800">{{ zakaz.rand_color.name }}</span>
+                </dd>
+            </div>
+            {% endif %}
+            {% if zakaz.use_lazer %}
+            <div>
+                <dt class="font-medium text-gray-600">Лазер</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.use_lazer|yesno:"Да,Нет" }}</dd>
+            </div>
+            {% endif %}
+            {% if zakaz.use_chaxlash %}
+            <div>
+                <dt class="font-medium text-gray-600">Заточка</dt>
+                <dd class="mt-1 text-gray-800">{{ zakaz.use_chaxlash|yesno:"Да,Нет" }}</dd>
+            </div>
+            {% endif %}
+
+        </dl>
+    </div>
+    {% endif %}
+
+    <!-- 2. Информация о производстве -->
+    {% if zp %}
+    <div class="bg-white rounded shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Proizvodstvo</h3>
+        <dl class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
+            <div>
+                <dt class="font-medium text-gray-600">Zakaz Tushgan Sana</dt>
+                <dd class="mt-1 text-gray-800">{{ zp.created|date:"d.m.Y" }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Boshlangan Sana</dt>
+                <dd class="mt-1 text-gray-800">{{ zp.started|date:"d.m.Y" }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Bajarilgan Sana</dt>
+                <dd class="mt-1 text-gray-800">{{ zp.finished|date:"d.m.Y"|default:"—" }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Status</dt>
+                <dd class="mt-1 text-gray-800">{{ zp.status }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Soni</dt>
+                <dd class="mt-1 text-gray-800">{{ zp.quantity }} / {{ zakaz.quantity }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600">Brak Soni</dt>
+                <dd class="mt-1 text-gray-800">{{ brak_total }}</dd>
+            </div>
+        </dl>
+    </div>
+
+    <!-- 3. Этапы производства -->
+    <div class="bg-white rounded shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Jarayonlar</h3>
+        <div class="space-y-4">
+            {% for stage in stages %}
+            <div class="border rounded-lg p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-medium text-gray-700">{{ stage.jarayon.name }}</span>
+                    <span class="text-sm text-gray-500">#{{ forloop.counter }}</span>
+                </div>
+                <dl class="grid grid-cols-1 sm:grid-cols-4 gap-x-3 gap-y-4 text-sm">
+                    <div>
+                        <dt class="text-gray-600">Bajarildi</dt>
+                        <dd class="text-gray-800">{{ stage.quantity }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-600">Brak</dt>
+                        <dd class="text-gray-800">{{ stage.total_brak }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-600">Boshlandi</dt>
+                        <dd class="text-gray-800">{{ stage.started|date:"d.m.Y" }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-600">Tugadi</dt>
+                        <dd class="text-gray-800">{{ stage.finished|date:"d.m.Y"|default:"—" }}</dd>
+                    </div>
+                </dl>
+            </div>
+            {% empty %}
+            <p class="text-gray-600">Jarayonlar hali boshlanmadi.</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Список продаж -->
+    <div class="bg-white rounded shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Sotuvlar</h3>
+        <div class="space-y-4">
+            {% if sales %}
+            {% for sale in sales %}
+            <div class="bg-white rounded shadow p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <dt class="text-sm text-gray-600">Sotildi</dt>
+                    <dd class="font-medium">{{ sale.quantity }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-600">Sotilgan Sana</dt>
+                    <dd class="font-medium">{{ sale.sold_date|date:"d.m.Y" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-600">Tasdiqlangan</dt>
+                    <dd class="font-medium">{{ sale.approved|yesno:"Ha,Yoq" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-600">Tasdiqlangan Sana</dt>
+                    <dd class="font-medium">
+                        {{ sale.approved_date|date:"d.m.Y"|default:"—" }}
+                    </dd>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-gray-600">Hali Sotuv Bolmadi</p>
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

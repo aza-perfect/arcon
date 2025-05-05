@@ -1,0 +1,32 @@
+{% extends 'production/base_plain.html' %}
+{% load static %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-xl">
+    <div class="flex justify-center mb-6">
+      <img src="{% static 'production/logo.jpg' %}" alt="Логотип" class="h-16 w-auto" />
+    </div>
+    <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Войдите в систему</h2>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div>
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {{ form.username.errors }}
+      </div>
+      <div>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        {{ form.password.errors }}
+      </div>
+      <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+        Войти
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

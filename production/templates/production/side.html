@@ -1,0 +1,154 @@
+{% load custom_tags %}
+
+<!-- Sidebar для мобильных и десктопов -->
+<aside id="mobileSidebar"
+       class="fixed top-0 my-2 mr-2 left-0 z-50 h-full w-64 bg-white shadow-md transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex md:w-1/5 md:h-full md:shadow-none md:rounded md:z-auto md:top-auto md:left-auto">
+
+    <div class="p-4 overflow-y-auto flex flex-col h-full">
+        <div class="mb-4 md:hidden flex justify-end">
+            <button onclick="document.getElementById('mobileSidebar').classList.add('-translate-x-full')">
+                <i data-feather="x" class="w-6 h-6 text-gray-600"></i>
+            </button>
+        </div>
+        <!-- Мобильная версия -->
+        <div class="md:hidden p-4 flex justify-between items-center">
+            <div>
+                <i data-feather="user" class="mr-2 w-5 h-5"></i>
+                {{ request.user.get_full_name|default:request.user.username }}
+            </div>
+            <form action="{% url 'production:logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-base flex items-center">
+                    <i data-feather="log-out" class="mr-2 w-5 h-5"></i> Chiqish
+                </button>
+            </form>
+        </div>
+        {% if not is_worker %}
+        <nav class="space-y-1">
+            {% if request.user|is_seller_t or is_admin %}
+            <a href="{% url 'production:seller_dashboard' %}"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:seller_dashboard' %}">
+                <i data-feather="shopping-bag" class="mr-2 w-6 h-6"></i> Zakazlar
+            </a>
+            <a href="{% url 'production:sotuv' %}"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:sotuv' %}">
+                <i data-feather="activity" class="mr-2 w-6 h-6"></i> Sotuvlar
+            </a>
+            <a href="{% url 'production:mijoz' %}"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:mijoz' %}">
+                <i data-feather="users" class="mr-2 w-7 h-6"></i> Mijozlar
+            </a>
+            {% endif %}
+            <a href="{% url 'production:mahsulot_list' %}"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:mahsulot_list' %}">
+                <i data-feather="box" class="mr-2 w-7 h-6"></i> Mahsulotlar
+            </a>
+            {% if not request.user|is_skladchi or is_admin %}
+            <a href="{% url 'production:worker_dashboard' %}?stage=5"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:worker_dashboard' 5 %}">
+                <i data-feather="log-in" class="mr-2 w-7 h-6"></i> Sklad Kirim
+            </a>
+            <a href="{% url 'production:warehouse_confirmations' %}"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:warehouse_confirmations' %}">
+                <i data-feather="log-out" class="mr-2 w-7 h-6"></i> Sklad Chiqim
+            </a>
+            {% endif %}
+            {% if not request.user|is_seller_t or is_admin %}
+            <a href="{% url 'production:manager_dashboard' %}"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:manager_dashboard' %}">
+                <i data-feather="layers" class="mr-2 w-7 h-6"></i> Proizvodstvo Zakazlari
+            </a>
+            <div class="relative">
+                <!-- Кнопка-триггер -->
+                <button id="dropdownToggle"
+                        class="w-full flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:worker_dashboard' %} focus:outline-none focus:ring"
+                        type="button">
+                    <i data-feather="server" class="mr-2 w-6 h-6"></i>
+                    Proizvodstvo
+                    <svg class="ml-auto w-4 h-4 transition-transform" id="dropdownIcon" fill="none"
+                         stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <!-- Сам dropdown, по умолчанию скрыт -->
+                <div id="dropdownMenu"
+                     class="hidden absolute mt-1 left-0 w-full bg-white rounded shadow-lg z-50 max-h-60 overflow-y-auto">
+                    {% for jarayon in jarayons %}
+                    {% if jarayon.name != 'Sklad' %}
+                    <a href="{% url 'production:worker_dashboard' %}?stage={{ jarayon.id }}"
+                       class="block px-4 py-2 rounded {% active 'production:worker_dashboard' jarayon.id %}">
+                        {{ jarayon.name }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if is_admin %}
+            <a href="#"
+               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {% active 'production:table' %} hover:text-gray-900">
+                <i data-feather="table" class="mr-2 w-7 h-6"></i> Tablica
+            </a>
+            {% endif %}
+        </nav>
+        {% endif %}
+
+    </div>
+</aside>
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('mobileSidebar');
+      const burger  = document.getElementById('burgerBtn');
+      const closeBtn = sidebar.querySelector('button'); // ваша кнопка “X”
+
+      // 1. Открытие:
+      burger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sidebar.classList.remove('-translate-x-full');
+      });
+
+      // 2. Закрытие по “X”:
+      closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sidebar.classList.add('-translate-x-full');
+      });
+
+      // 3. Закрытие кликом вне aside:
+      document.addEventListener('click', function(e) {
+        // если сайдбар открыт и клик НЕ внутри него и не по бургеру — закрываем
+        if (!sidebar.classList.contains('-translate-x-full')
+            && !sidebar.contains(e.target)
+            && !burger.contains(e.target)) {
+          sidebar.classList.add('-translate-x-full');
+        }
+      });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn     = document.getElementById('dropdownToggle');
+      const menu    = document.getElementById('dropdownMenu');
+      const icon    = document.getElementById('dropdownIcon');
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();                // чтобы клик по кнопке не закрыл сам себя
+        menu.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180'); // стрелка вверх/вниз
+      });
+      // Закрываем, если клик за пределами меню
+      document.addEventListener('click', function(e) {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          if (!menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+            icon.classList.remove('rotate-180');
+          }
+        }
+      });
+    });
+</script>
+{% endblock %}
+
+
