@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import sys, os
 from pathlib import Path
 import django_heroku
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -97,13 +99,18 @@ WSGI_APPLICATION = 'arkon.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'arkon',           # Имя базы данных (можешь изменить)
-        'USER': 'postgres',
-        'PASSWORD': '1234',        # если пусто — просто оставь ''
-        'HOST': 'localhost',
-        'PORT': '5432',            # стандартный порт PostgreSQL
+        'NAME':   os.getenv('PG_NAME',   'arkon'),
+        'USER':   os.getenv('PG_USER',   'postgres'),
+        'PASSWORD': os.getenv('PG_PASS', '1234'),
+        'HOST':   os.getenv('PG_HOST',   'localhost'),
+        'PORT':   os.getenv('PG_PORT',   '5432'),
     }
 }
+
+# переопределение для Heroku (если установлена переменная DATABASE_URL)
+db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+if db_from_env:
+    DATABASES['default'].update(db_from_env)
 
 
 # Password validation
