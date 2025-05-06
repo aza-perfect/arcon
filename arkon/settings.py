@@ -13,7 +13,7 @@ import sys, os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -23,8 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -94,11 +94,11 @@ WSGI_APPLICATION = 'arkon.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-#         'NAME': os.environ.get('POSTGRES_DB', 'db_name'),
-#         'USER': os.environ.get('POSTGRES_USER', 'username'),
-#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
-#         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+#         'NAME': 'arkon',           # Имя базы данных (можешь изменить)
+#         'USER': 'postgres',
+#         'PASSWORD': '1234',        # если пусто — просто оставь ''
+#         'HOST': 'localhost',
+#         'PORT': '5432',            # стандартный порт PostgreSQL
 #     }
 # }
 DATABASES = {

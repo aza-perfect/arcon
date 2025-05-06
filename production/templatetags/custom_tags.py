@@ -88,8 +88,6 @@ def is_filter_m(context):
     req = context['request']
     current = req.resolver_match.view_name
     # если view_name не совпадает — ничего не делаем
-    print(current)
-    print('test')
     if current == 'production:manager_dashboard':
         return False
 
