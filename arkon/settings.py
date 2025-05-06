@@ -16,8 +16,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
-print("DATABASE_URL =", os.getenv("DATABASE_URL"))
-print("PARSED =", dj_database_url.parse(os.getenv("DATABASE_URL")))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -104,14 +102,20 @@ WSGI_APPLICATION = 'arkon.wsgi.application'
 #         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
 #     }
 # }
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        # в корне проекта файл db.sqlite3
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.getenv('DATABASE_URL'),
+#         conn_max_age=600,
+#         ssl_require=True,
+#     )
+# }
 # # переопределение для Heroku (если установлена переменная DATABASE_URL)
 # db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
 # if db_from_env:
