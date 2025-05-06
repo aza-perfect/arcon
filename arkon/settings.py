@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import sys, os
 from pathlib import Path
-import django_heroku
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -93,20 +92,28 @@ WSGI_APPLICATION = 'arkon.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+#         'NAME': os.environ.get('POSTGRES_DB', 'db_name'),
+#         'USER': os.environ.get('POSTGRES_USER', 'username'),
+#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
+#         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-        'NAME': os.environ.get('POSTGRES_DB', 'db_name'),
-        'USER': os.environ.get('POSTGRES_USER', 'username'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
-# переопределение для Heroku (если установлена переменная DATABASE_URL)
-db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
-if db_from_env:
-    DATABASES['default'].update(db_from_env)
+# # переопределение для Heroku (если установлена переменная DATABASE_URL)
+# db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# if db_from_env:
+#     DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -141,8 +148,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-django_heroku.settings(locals())
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
 
