@@ -13,11 +13,11 @@ import sys, os
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-ENV_PATH = Path.home() / '.env'
-load_dotenv(dotenv_path=ENV_PATH)
-BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
+print("DATABASE_URL =", os.getenv("DATABASE_URL"))
+print("PARSED =", dj_database_url.parse(os.getenv("DATABASE_URL")))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -26,8 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
