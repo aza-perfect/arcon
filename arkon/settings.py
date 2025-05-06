@@ -12,8 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import sys, os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
-# load_dotenv()
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -23,8 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = False
+# DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -36,7 +37,6 @@ if not TESTING:
         'tailwind',
         'theme',
         'widget_tweaks',
-        "polls.apps.PollsConfig",
         "production.apps.ProductionConfig",
         # "debug_toolbar",
         'django.contrib.admin',
@@ -101,20 +101,20 @@ WSGI_APPLICATION = 'arkon.wsgi.application'
 #         'PORT': '5432',            # стандартный порт PostgreSQL
 #     }
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # в корне проекта файл db.sqlite3
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 # DATABASES = {
-#     'default': dj_database_url.config(
-#         default=os.getenv('DATABASE_URL'),
-#         conn_max_age=600,
-#         ssl_require=True,
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         # в корне проекта файл db.sqlite3
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True,
+    )
+}
 # # переопределение для Heroku (если установлена переменная DATABASE_URL)
 # db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
 # if db_from_env:
