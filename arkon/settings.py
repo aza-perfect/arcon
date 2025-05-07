@@ -27,13 +27,15 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu
 DEBUG = True
 # DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['arcon.onrender.com', "*"]
 CSRF_TRUSTED_ORIGINS = [
-    'https://arcon.onrender.com/',
+    'https://arcon.onrender.com',
 ]
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE    = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # Application definition
 TESTING = "test" in sys.argv
@@ -55,8 +57,8 @@ if not TESTING:
 
     MIDDLEWARE = [
         # "debug_toolbar.middleware.DebugToolbarMiddleware",
-        'whitenoise.middleware.WhiteNoiseMiddleware',
         'django.middleware.security.SecurityMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
