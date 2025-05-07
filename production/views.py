@@ -741,14 +741,15 @@ class MahsulotList(LoginRequiredMixin, TemplateView):
 
             # 5) Разбивка по продавцам (sold/ordered)
             sellers = (
-                qs_orders.values("seller")
+                qs_orders
+                .values("seller")
                 .distinct()
                 .order_by("seller")
                 .annotate(
                     ordered=Sum("quantity"),
                     sold=Sum(
-                        F("sotuv__quantity"),
-                        filter=F("sotuv__approved") == True
+                        "sotuv__quantity",
+                        filter=Q(sotuv__approved=True)
                     )
                 )
             )
